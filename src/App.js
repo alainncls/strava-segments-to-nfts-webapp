@@ -3,10 +3,9 @@ import React, { useEffect, useState } from 'react';
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [activities, setActivities] = useState([]);
-  const [refreshToken, setRefreshToken] = useState(
-    process.env.REACT_APP_REFRESH_TOKEN,
-  );
+  const [refreshToken, setRefreshToken] = useState(process.env.REACT_APP_REFRESH_TOKEN);
   const [accessToken, setAccessToken] = useState();
+  const [checkResults, setCheckResults] = useState();
 
   useEffect(() => {
     let clientID = process.env.REACT_APP_CLIENT_ID;
@@ -30,9 +29,7 @@ function App() {
   // use current access token to call all activities
   useEffect(() => {
     if (accessToken) {
-      fetch(
-        `https://www.strava.com/api/v3/athlete/activities?access_token=${accessToken}`,
-      )
+      fetch(`https://www.strava.com/api/v3/athlete/activities?access_token=${accessToken}`)
         .then((res) => res.json())
         .then((data) => {
           setActivities(data);
@@ -53,8 +50,17 @@ function App() {
       })
         .then((res) => res.json())
         .then((data) => {
-          if(data.activity.matchingSegmentsIds>0){
-            alert(`This activity has ${data.activity.matchingSegmentsIds.length} matching segments`)
+          if (data.activity.matchingSegmentsIds > 0) {
+            alert(`This activity has ${data.activity.matchingSegmentsIds.length} matching segments`);
+            console.log('activity', data.activity);
+            setCheckResults(
+              data.activity.matchingSegmentsIds.map((matchingSegmentId, index) => {
+                return {
+                  segmentId: matchingSegmentId,
+                  picture: data.activity.segmentsPictures[index],
+                };
+              }),
+            );
           }
         })
         .catch((e) => console.error(e));
@@ -64,23 +70,39 @@ function App() {
   function showActivities() {
     if (isLoading) {
       return <>LOADING</>;
+    } else if (checkResults && checkResults.length) {
+      return <></>;
     } else {
       return (
         activities &&
         activities.length &&
         activities.map((activity) => (
-          <li key={activity.id}>
+          <div key={activity.id}>
             <h1>{activity.name}</h1>
-            <button onClick={() => checkForSegments(activity.id)}>
-              Check for segments
-            </button>
-          </li>
+            <button onClick={() => checkForSegments(activity.id)}>Check for segments</button>
+          </div>
         ))
       );
     }
   }
 
-  return <div className="App">{showActivities()}</div>;
+  function showMatchingSegments() {
+    if (checkResults && checkResults.length) {
+      return checkResults.map((result) => (
+        <div key={result.segmentId}>
+          <h1>Segment #{result.segmentId}</h1>
+          <img alt={result.segmentId} src={result.picture} width={500}/>
+        </div>
+      ));
+    }
+  }
+
+  return (
+    <div className="App">
+      {showActivities()}
+      {showMatchingSegments()}
+    </div>
+  );
 }
 
 export default App;
