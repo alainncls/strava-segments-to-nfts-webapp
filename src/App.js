@@ -52,7 +52,6 @@ function App() {
         .then((data) => {
           if (data.activity.matchingSegmentsIds > 0) {
             alert(`This activity has ${data.activity.matchingSegmentsIds.length} matching segments`);
-            console.log('activity', data.activity);
             setCheckResults(
               data.activity.matchingSegmentsIds.map((matchingSegmentId, index) => {
                 return {
@@ -91,7 +90,7 @@ function App() {
       return checkResults.map((result) => (
         <div key={result.segmentId}>
           <h1>Segment #{result.segmentId}</h1>
-          <img alt={result.segmentId} src={result.picture} width={500}/>
+          <img alt={result.segmentId} src={`https://ipfs.io/ipfs/${result.picture}`} width={500} />
         </div>
       ));
     }
