@@ -11,8 +11,8 @@ const StravaLogin = () => {
   const navigate = useNavigate();
   const targetScope = ['read', 'activity:read', 'activity:read_all', 'read_all'];
 
-  const [refreshToken, setRefreshToken] = useState('');
-  const [accessToken, setAccessToken] = useState('');
+  const [refreshToken, setRefreshToken] = useState<string>('');
+  const [accessToken, setAccessToken] = useState<string>('');
   const [displayScopeError, setDisplayScopeError] = useState(false);
 
   useEffect(() => {
