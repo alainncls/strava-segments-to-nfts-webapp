@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import Button from 'react-bootstrap/Button';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -73,14 +75,57 @@ function App() {
       return <></>;
     } else {
       return (
-        activities &&
-        activities.length &&
-        activities.map((activity) => (
-          <div key={activity.id}>
-            <h1>{activity.name}</h1>
-            <button onClick={() => checkForSegments(activity.id)}>Check for segments</button>
+        <>
+          <nav className="navbar navbar-expand-lg navbar-light bg-light">
+            <div className="container-fluid">
+              <a className="navbar-brand" href="#">
+                Strava Segments to NFTs
+              </a>
+              <Button
+                className="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav"
+                aria-controls="navbarNav"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+              >
+                <span className="navbar-toggler-icon"></span>
+              </Button>
+              <div className="collapse navbar-collapse" id="navbarNav">
+                <ul className="navbar-nav">
+                  <li className="nav-item">
+                    <a className="nav-link active" aria-current="page" href="#">
+                      Home
+                    </a>
+                  </li>
+                  <li className="nav-item">
+                    <a className="nav-link disabled" href="#">
+                      Coming soon
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </nav>
+          <div className="row">
+            {activities &&
+              activities.length &&
+              activities.map((activity) => (
+                <div className="col-sm-6" key={activity.id}>
+                  <div className="card">
+                    <div className="card-body">
+                      <h5 className="card-title">{activity.name}</h5>
+                      <p className="card-text">
+                        Some quick example text to build on the card title and make up the bulk of the card's content.
+                      </p>
+                      <Button onClick={() => checkForSegments(activity.id)}>Check for segments</Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
           </div>
-        ))
+        </>
       );
     }
   }
