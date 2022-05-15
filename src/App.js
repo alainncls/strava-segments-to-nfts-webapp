@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [activities, setActivities] = useState([]);
   const [refreshToken, setRefreshToken] = useState(process.env.REACT_APP_REFRESH_TOKEN);
   const [accessToken, setAccessToken] = useState();
-  const [checkResults, setCheckResults] = useState();
+  const [checkResults, setCheckResults] = useState([]);
 
   useEffect(() => {
     let clientID = process.env.REACT_APP_CLIENT_ID;
@@ -52,7 +52,7 @@ function App() {
       })
         .then((res) => res.json())
         .then((data) => {
-          if (data.activity.matchingSegmentsIds > 0) {
+          if (data.activity?.matchingSegmentsIds > 0) {
             alert(`This activity has ${data.activity.matchingSegmentsIds.length} matching segments`);
             setCheckResults(
               data.activity.matchingSegmentsIds.map((matchingSegmentId, index) => {
@@ -68,6 +68,70 @@ function App() {
     }
   };
 
+  function showHeader() {
+    return (
+      <header>
+        <nav className="navbar navbar-expand-lg navbar-light bg-white">
+          <div className="container-fluid">
+            <button
+              className="navbar-toggler"
+              type="button"
+              data-mdb-toggle="collapse"
+              data-mdb-target="#navbarExample01"
+              aria-controls="navbarExample01"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <i className="fas fa-bars"></i>
+            </button>
+            <div className="collapse navbar-collapse" id="navbarExample01">
+              <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+                <li className="nav-item active">
+                  <a className="nav-link" aria-current="page" href="#">
+                    Home
+                  </a>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link  disabled" href="#">
+                    Features
+                  </a>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link  disabled" href="#">
+                    About
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+
+        <div className="p-5 mb-3 text-center bg-light">
+          <h1 className="mb-3">Strava Segments to NFTs</h1>
+          <h4 className="mb-3">Mint NFTs for the eligible Strava segments you've gone through</h4>
+          <a
+            className="btn btn-outline-secondary m-1"
+            href="https://github.com/alainncls/strava-segments-to-nfts-webapp"
+            target="_blank"
+            rel="noreferrer"
+            role="button"
+          >
+            <i className="bi bi-github"></i> WebApp
+          </a>
+          <a
+            className="btn btn-outline-secondary m-1"
+            href="https://github.com/alainncls/strava-segments-to-nfts"
+            target="_blank"
+            rel="noreferrer"
+            role="button"
+          >
+            <i className="bi bi-github"></i> Server
+          </a>
+        </div>
+      </header>
+    );
+  }
+
   function showActivities() {
     if (isLoading) {
       return <>LOADING</>;
@@ -75,57 +139,22 @@ function App() {
       return <></>;
     } else {
       return (
-        <>
-          <nav className="navbar navbar-expand-lg navbar-light bg-light">
-            <div className="container-fluid">
-              <a className="navbar-brand" href="#">
-                Strava Segments to NFTs
-              </a>
-              <Button
-                className="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarNav"
-                aria-controls="navbarNav"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-              >
-                <span className="navbar-toggler-icon"></span>
-              </Button>
-              <div className="collapse navbar-collapse" id="navbarNav">
-                <ul className="navbar-nav">
-                  <li className="nav-item">
-                    <a className="nav-link active" aria-current="page" href="#">
-                      Home
-                    </a>
-                  </li>
-                  <li className="nav-item">
-                    <a className="nav-link disabled" href="#">
-                      Coming soon
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </nav>
-          <div className="row">
-            {activities &&
-              activities.length &&
-              activities.map((activity) => (
-                <div className="col-sm-6" key={activity.id}>
-                  <div className="card">
-                    <div className="card-body">
-                      <h5 className="card-title">{activity.name}</h5>
-                      <p className="card-text">
-                        Some quick example text to build on the card title and make up the bulk of the card's content.
-                      </p>
-                      <Button onClick={() => checkForSegments(activity.id)}>Check for segments</Button>
-                    </div>
+        <div className="row">
+          {activities &&
+            activities.length &&
+            activities.map((activity) => (
+              <div className="col-sm-6 mb-3" key={activity.id}>
+                <div className="card">
+                  <div className="card-body">
+                    <h5 className="card-title">{activity.name}</h5>
+                    <Button className="btn btn-primary btn-sm" onClick={() => checkForSegments(activity.id)}>
+                      Check for eligible segments
+                    </Button>
                   </div>
                 </div>
-              ))}
-          </div>
-        </>
+              </div>
+            ))}
+        </div>
       );
     }
   }
@@ -142,10 +171,13 @@ function App() {
   }
 
   return (
-    <div className="App">
-      {showActivities()}
-      {showMatchingSegments()}
-    </div>
+    <Container className="p-3">
+      {showHeader()}
+      <div className="container">
+        {showActivities()}
+        {showMatchingSegments()}
+      </div>
+    </Container>
   );
 }
 
