@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
+import { Card, Modal, Spinner } from 'react-bootstrap';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -8,6 +9,7 @@ function App() {
   const [refreshToken, setRefreshToken] = useState(process.env.REACT_APP_REFRESH_TOKEN);
   const [accessToken, setAccessToken] = useState();
   const [checkResults, setCheckResults] = useState([]);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     let clientID = process.env.REACT_APP_CLIENT_ID;
@@ -35,14 +37,15 @@ function App() {
         .then((res) => res.json())
         .then((data) => {
           setActivities(data);
-          setIsLoading(false);
         })
-        .catch((e) => console.error(e));
+        .catch((e) => console.error(e))
+        .finally(() => setIsLoading(false));
     }
   }, [accessToken]);
 
   const checkForSegments = (activityId) => {
     if (accessToken) {
+      setIsLoading(true);
       fetch(`http://localhost:3001/activities/${activityId}`, {
         method: 'POST',
         headers: new Headers({
@@ -53,7 +56,6 @@ function App() {
         .then((res) => res.json())
         .then((data) => {
           if (data.activity?.matchingSegmentsIds > 0) {
-            alert(`This activity has ${data.activity.matchingSegmentsIds.length} matching segments`);
             setCheckResults(
               data.activity.matchingSegmentsIds.map((matchingSegmentId, index) => {
                 return {
@@ -62,13 +64,15 @@ function App() {
                 };
               }),
             );
+            setShowModal(true);
           }
         })
-        .catch((e) => console.error(e));
+        .catch((e) => console.error(e))
+        .finally(() => setIsLoading(false));
     }
   };
 
-  function showHeader() {
+  const showHeader = () => {
     return (
       <header>
         <nav className="navbar navbar-expand-lg navbar-light bg-white">
@@ -130,53 +134,103 @@ function App() {
         </div>
       </header>
     );
-  }
+  };
 
-  function showActivities() {
+  const showFooter = () => {
+    return (
+      <footer className="bg-secondary text-center text-white text-lg-start fixed-bottom">
+        <div className="text-center p-3">
+          <strong>Strava Segments to NFTs</strong> built and designed with
+          <span className="text-danger"> ♥</span> by{' '}
+          <a href="https://alainnicolas.fr" target="_blank" rel="noreferrer" className="text-white">
+            Alain Nicolas
+          </a>
+        </div>
+      </footer>
+    );
+  };
+
+  const showActivities = () => {
+    return (
+      <div className="row">
+        {activities &&
+          activities.length &&
+          activities.map((activity) => (
+            <div className="col-sm-6 mb-3" key={activity.id}>
+              <Card>
+                <Card.Header>
+                  <Card.Title>{activity.name}</Card.Title>
+                </Card.Header>
+                <Card.Body>
+                  <div>{new Date(Date.parse(activity.start_date)).toLocaleDateString()}</div>
+                </Card.Body>
+                <Card.Footer>
+                  <Button className="btn btn-primary btn-sm" onClick={() => checkForSegments(activity.id)}>
+                    Check for eligible segments
+                  </Button>
+                </Card.Footer>
+              </Card>
+            </div>
+          ))}
+      </div>
+    );
+  };
+
+  const handleModalClose = () => setShowModal(false);
+  const handleMintNfts = () => {
+    // TODO: do mint NFTs
+    setShowModal(false);
+  };
+
+  const showMatchingSegments = () => {
+    return (
+      <Modal show={showModal} onHide={handleModalClose} size={'lg'} scrollable={true}>
+        <Modal.Header closeButton>
+          <Modal.Title>Eligible segments</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {checkResults.map((result) => (
+            <div key={result.segmentId}>
+              <h5>Segment #{result.segmentId}</h5>
+              <img
+                alt={result.segmentId}
+                src={`https://ipfs.io/ipfs/${result.picture.replace('ipfs://', '')}`}
+                width={500}
+              />
+            </div>
+          ))}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleModalClose}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleMintNfts}>
+            Mint NFTs
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    );
+  };
+
+  const showLoader = () => {
     if (isLoading) {
-      return <>LOADING</>;
-    } else if (checkResults && checkResults.length) {
-      return <></>;
-    } else {
       return (
-        <div className="row">
-          {activities &&
-            activities.length &&
-            activities.map((activity) => (
-              <div className="col-sm-6 mb-3" key={activity.id}>
-                <div className="card">
-                  <div className="card-body">
-                    <h5 className="card-title">{activity.name}</h5>
-                    <Button className="btn btn-primary btn-sm" onClick={() => checkForSegments(activity.id)}>
-                      Check for eligible segments
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ))}
+        <div className="d-flex justify-content-center">
+          <Spinner animation={'grow'} role={'status'} />
         </div>
       );
     }
-  }
-
-  function showMatchingSegments() {
-    if (checkResults && checkResults.length) {
-      return checkResults.map((result) => (
-        <div key={result.segmentId}>
-          <h1>Segment #{result.segmentId}</h1>
-          <img alt={result.segmentId} src={`https://ipfs.io/ipfs/${result.picture}`} width={500} />
-        </div>
-      ));
-    }
-  }
+  };
 
   return (
     <Container className="p-3">
       {showHeader()}
-      <div className="container">
+      {showLoader()}
+      <Container className="mb-5">
         {showActivities()}
         {showMatchingSegments()}
-      </div>
+      </Container>
+      {showFooter()}
     </Container>
   );
 }
