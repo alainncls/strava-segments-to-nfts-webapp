@@ -215,7 +215,7 @@ function App() {
               <h5>Segment #{result.segmentId}</h5>
               <img
                 alt={result.segmentId}
-                src={`https://ipfs.io/ipfs/${result.picture.replace('ipfs://', '')}`}
+                src={`${result.picture.replace('ipfs://', 'https://ipfs.io/ipfs/')}`}
                 width={500}
               />
             </div>
