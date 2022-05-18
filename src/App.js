@@ -10,6 +10,7 @@ function App() {
   const [accessToken, setAccessToken] = useState();
   const [checkResults, setCheckResults] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [currentActivityId, setCurrentActivityId] = useState('');
 
   useEffect(() => {
     let clientID = process.env.REACT_APP_CLIENT_ID;
@@ -56,6 +57,7 @@ function App() {
         .then((res) => res.json())
         .then((data) => {
           if (data.activity?.matchingSegmentsIds > 0) {
+            setCurrentActivityId(activityId);
             setCheckResults(
               data.activity.matchingSegmentsIds.map((matchingSegmentId, index) => {
                 return {
@@ -178,8 +180,27 @@ function App() {
 
   const handleModalClose = () => setShowModal(false);
   const handleMintNfts = () => {
-    // TODO: do mint NFTs
-    setShowModal(false);
+    if (currentActivityId !== '') {
+      setIsLoading(true);
+      fetch(`http://localhost:3001/nfts/${currentActivityId}`, {
+        method: 'POST',
+        headers: new Headers({
+          'x-strava-token': accessToken,
+          'Content-Type': 'application/json',
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log('data', data);
+        })
+        .catch((e) => console.error(e))
+        .finally(() => {
+          setShowModal(false);
+          setIsLoading(false);
+        });
+    } else {
+      alert('Something went wrong while trying to mint NFTs');
+    }
   };
 
   const showMatchingSegments = () => {
