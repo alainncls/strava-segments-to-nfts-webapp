@@ -178,21 +178,26 @@ function App() {
     );
   };
 
+  const buildMintNftsBody = () => {
+    const segmentsPictures = checkResults.map((result) => result.picture);
+    const matchingSegmentsIds = checkResults.map((result) => result.segmentId);
+    return { segmentsPictures, matchingSegmentsIds };
+  };
+
   const handleModalClose = () => setShowModal(false);
   const handleMintNfts = () => {
-    if (currentActivityId !== '') {
+    if (checkResults.length) {
       setIsLoading(true);
-      fetch(`http://localhost:3001/nfts/${currentActivityId}`, {
+      const body = buildMintNftsBody();
+      fetch('http://localhost:3001/nfts', {
         method: 'POST',
+        body: JSON.stringify(body),
         headers: new Headers({
           'x-strava-token': accessToken,
           'Content-Type': 'application/json',
         }),
       })
         .then((res) => res.json())
-        .then((data) => {
-          console.log('data', data);
-        })
         .catch((e) => console.error(e))
         .finally(() => {
           setShowModal(false);
