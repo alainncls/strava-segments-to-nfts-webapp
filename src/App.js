@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Container from 'react-bootstrap/Container';
-import Button from 'react-bootstrap/Button';
-import { Card, Modal, Spinner } from 'react-bootstrap';
+import { Button, Card, Container, Modal, Spinner } from 'react-bootstrap';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -10,7 +8,6 @@ function App() {
   const [accessToken, setAccessToken] = useState();
   const [checkResults, setCheckResults] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [currentActivityId, setCurrentActivityId] = useState('');
 
   useEffect(() => {
     let clientID = process.env.REACT_APP_CLIENT_ID;
@@ -57,7 +54,6 @@ function App() {
         .then((res) => res.json())
         .then((data) => {
           if (data.activity?.matchingSegmentsIds > 0) {
-            setCurrentActivityId(activityId);
             setCheckResults(
               data.activity.matchingSegmentsIds.map((matchingSegmentId, index) => {
                 return {
@@ -83,14 +79,14 @@ function App() {
               className="navbar-toggler"
               type="button"
               data-mdb-toggle="collapse"
-              data-mdb-target="#navbarExample01"
-              aria-controls="navbarExample01"
+              data-mdb-target="#navbar"
+              aria-controls="navbar"
               aria-expanded="false"
               aria-label="Toggle navigation"
             >
               <i className="fas fa-bars"></i>
             </button>
-            <div className="collapse navbar-collapse" id="navbarExample01">
+            <div className="collapse navbar-collapse" id="navbar">
               <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                 <li className="nav-item active">
                   <a className="nav-link" aria-current="page" href="#">
