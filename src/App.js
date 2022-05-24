@@ -44,7 +44,7 @@ function App() {
   const checkForSegments = (activityId) => {
     if (accessToken) {
       setIsLoading(true);
-      fetch(`http://localhost:3001/activities/${activityId}`, {
+      fetch(`${process.env.REACT_APP_SERVER_URL}/activities/${activityId}`, {
         method: 'POST',
         headers: new Headers({
           'x-strava-token': accessToken,
@@ -185,7 +185,7 @@ function App() {
     if (checkResults.length) {
       setIsLoading(true);
       const body = buildMintNftsBody();
-      fetch('http://localhost:3001/nfts', {
+      fetch(`${process.env.REACT_APP_SERVER_URL}/nfts`, {
         method: 'POST',
         body: JSON.stringify(body),
         headers: new Headers({
