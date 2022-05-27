@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Spinner } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import Footer from './components/Footer';
 import Header from './components/Header';
 import MatchingSegmentsModal from './components/MatchingSegmentsModal';
 import { IActivity, IActivityData } from './types/activity';
 import { ISegment } from './types/segment';
 import Activities from './components/Activities';
+import Loader from './components/Loader';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -105,36 +106,28 @@ function App() {
     }
   };
 
-  const showLoader = () => {
-    if (isLoading) {
-      return (
-        <div className="d-flex justify-content-center">
-          <Spinner animation={'grow'} role={'status'} />
-        </div>
-      );
-    }
-  };
-
   const onModalHide = () => {
     setShowModal(false);
     setCheckResults([]);
   };
 
   return (
-    <Container className="p-3">
-      <Header />
-      {showLoader()}
-      <Container className="mb-5">
-        <Activities activities={activities} checkForSegments={checkForSegments} />
-        <MatchingSegmentsModal
-          checkResults={checkResults}
-          displayModal={showModal}
-          handleMintNfts={handleMintNfts}
-          onHide={onModalHide}
-        />
+    <>
+      <Loader loading={isLoading} />
+      <Container className="p-3">
+        <Header />
+        <Container className="mb-5">
+          <Activities activities={activities} checkForSegments={checkForSegments} />
+          <MatchingSegmentsModal
+            checkResults={checkResults}
+            displayModal={showModal}
+            handleMintNfts={handleMintNfts}
+            onHide={onModalHide}
+          />
+        </Container>
+        <Footer />
       </Container>
-      <Footer />
-    </Container>
+    </>
   );
 }
 
