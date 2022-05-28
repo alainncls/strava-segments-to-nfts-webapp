@@ -6,7 +6,8 @@
     "forceConsistentCasingInFileNames": true,
     "module": "ESNext",
     "moduleResolution": "Node",
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "typeRoots" : ["node_modules/@types", "src/types"]
   },
   "include": [
     "src"
