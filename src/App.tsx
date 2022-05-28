@@ -116,7 +116,7 @@ function App() {
       <Loader loading={isLoading} />
       <Container className="p-3">
         <Header />
-        <Container className="mb-5">
+        <div className={'mb-5'}>
           <Activities activities={activities} checkForSegments={checkForSegments} />
           <MatchingSegmentsModal
             checkResults={checkResults}
@@ -124,7 +124,7 @@ function App() {
             handleMintNfts={handleMintNfts}
             onHide={onModalHide}
           />
-        </Container>
+        </div>
         <Footer />
       </Container>
     </>
