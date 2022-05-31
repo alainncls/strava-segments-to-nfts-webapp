@@ -1,26 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import useQueryParams from '../../hooks/useQueryParams';
 import { useNavigate } from 'react-router-dom';
+import { Container, Toast, ToastContainer } from 'react-bootstrap';
+import Header from '../../components/Header/Header';
+import Footer from '../../components/Footer/Footer';
+import './StravaLogin.css';
 
 const StravaLogin = () => {
   const query = useQueryParams();
   const navigate = useNavigate();
-  const targetScope = [
-    'read',
-    'activity:write',
-    'activity:read',
-    'activity:read_all',
-    'profile:write',
-    'profile:read_all',
-    'read_all',
-  ];
+  const targetScope = ['read', 'activity:read', 'activity:read_all', 'read_all'];
 
   const [refreshToken, setRefreshToken] = useState('');
   const [accessToken, setAccessToken] = useState('');
+  const [displayScopeError, setDisplayScopeError] = useState(false);
 
   useEffect(() => {
     const code = query.get('code');
     const scope = query.get('scope');
+      
     if (checkScope(scope) && code) {
       let clientID = process.env.REACT_APP_CLIENT_ID;
       let clientSecret = process.env.REACT_APP_CLIENT_SECRET;
@@ -40,7 +38,7 @@ const StravaLogin = () => {
           console.error(err);
         });
     } else {
-      // TODO: display error on scope
+      setDisplayScopeError(true);
     }
   }, [query]);
 
@@ -63,9 +61,21 @@ const StravaLogin = () => {
 
   return (
     <>
-      <div className="d-flex justify-content-center">
-        <p>Getting token from Strava</p>
-      </div>
+      <ToastContainer className="p-3 toast-scope" position={'top-center'}>
+        <Toast show={displayScopeError} onClick={() => setDisplayScopeError(false)}>
+          <Toast.Body>
+            <p>The scope you authorized is not sufficient for the app to work</p>
+            <a className={'btn btn-primary d-flex justify-content-center'} href={'/'}>
+              Retry
+            </a>
+          </Toast.Body>
+        </Toast>
+      </ToastContainer>
+
+      <Container className="p-3">
+        <Header />
+        <Footer />
+      </Container>
     </>
   );
 };

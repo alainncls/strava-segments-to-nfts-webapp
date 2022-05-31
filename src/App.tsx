@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Home from './screens/Home/Home';
-import StravaLogin from './components/StravaLogin/StravaLogin';
+import StravaLogin from './screens/StravaLogin/StravaLogin';
 
 function App() {
   return (
