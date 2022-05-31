@@ -1,5 +1,5 @@
 import React from 'react';
-import btnStrava from './../img/btn_strava.svg';
+import btnStrava from '../../assets/img/btn_strava.svg';
 
 const StravaLoginButton = () => {
   return (

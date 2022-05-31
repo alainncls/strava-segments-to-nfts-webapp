@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import useQuery from '../hooks/query';
+import useQueryParams from '../../hooks/useQueryParams';
 import { useNavigate } from 'react-router-dom';
 
 const StravaLogin = () => {
-  const query = useQuery();
+  const query = useQueryParams();
   const navigate = useNavigate();
   const targetScope = [
     'read',

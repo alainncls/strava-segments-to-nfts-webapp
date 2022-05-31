@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Container } from 'react-bootstrap';
-import { IActivity, IActivityData } from '../types/activity';
-import { ISegment } from '../types/segment';
-import Loader from './Loader';
-import Header from './Header';
-import Activities from './Activities';
-import MatchingSegmentsModal from './MatchingSegmentsModal';
-import StravaLoginButton from './StravaLoginButton';
-import Footer from './Footer';
+import { IActivity, IActivityData } from '../../types/activity';
+import { ISegment } from '../../types/segment';
+import Loader from '../../components/Loader/Loader';
+import Header from '../../components/Header/Header';
+import Activities from '../../components/Activities/Activities';
+import MatchingSegmentsModal from '../../components/MatchingSegmentsModal/MatchingSegmentsModal';
+import StravaLoginButton from '../../components/StravaLoginButton/StravaLoginButton';
+import Footer from '../../components/Footer/Footer';
 
 const Home = () => {
   const [isLoading, setIsLoading] = useState(true);

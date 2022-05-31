@@ -1,6 +1,6 @@
 import { Button, Modal } from 'react-bootstrap';
 import React from 'react';
-import { ISegment } from '../types/segment';
+import { ISegment } from '../../types/segment';
 
 interface IProps {
   displayModal: boolean;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Card } from 'react-bootstrap';
-import { IActivity } from '../types/activity';
+import { IActivity } from '../../types/activity';
 
 interface IProps {
   activities: IActivity[];
