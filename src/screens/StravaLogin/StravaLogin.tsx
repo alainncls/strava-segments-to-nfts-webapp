@@ -18,7 +18,7 @@ const StravaLogin = () => {
   useEffect(() => {
     const code = query.get('code');
     const scope = query.get('scope');
-      
+
     if (checkScope(scope) && code) {
       let clientID = process.env.REACT_APP_CLIENT_ID;
       let clientSecret = process.env.REACT_APP_CLIENT_SECRET;
@@ -44,9 +44,9 @@ const StravaLogin = () => {
 
   useEffect(() => {
     if (refreshToken !== '' && accessToken !== '') {
-      localStorage.setItem('refreshToken', refreshToken);
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('tokenCreationDate', new Date().toString());
+      sessionStorage.setItem('refreshToken', refreshToken);
+      sessionStorage.setItem('accessToken', accessToken);
+      sessionStorage.setItem('tokenCreationDate', new Date().toString());
       navigate('/');
     }
   }, [refreshToken, accessToken]);

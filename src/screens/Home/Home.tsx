@@ -40,17 +40,17 @@ const Home = () => {
   }, [tokenCreationDate]);
 
   useEffect(() => {
-    const access = localStorage.getItem('accessToken');
+    const access = sessionStorage.getItem('accessToken');
     if (access) {
       setAccessToken(access);
     }
 
-    const refresh = localStorage.getItem('refreshToken');
+    const refresh = sessionStorage.getItem('refreshToken');
     if (refresh) {
       setRefreshToken(refresh);
     }
 
-    const creationDate = localStorage.getItem('tokenCreationDate');
+    const creationDate = sessionStorage.getItem('tokenCreationDate');
     if (creationDate) {
       setTokenCreationDate(new Date(creationDate));
     }
