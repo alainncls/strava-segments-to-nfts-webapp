@@ -30,6 +30,9 @@ const Home = () => {
       )
         .then((res) => res.json())
         .then((result) => {
+          sessionStorage.setItem('refreshToken', result.refresh_token);
+          sessionStorage.setItem('accessToken', result.access_token);
+          sessionStorage.setItem('tokenCreationDate', Date().toString());
           setRefreshToken(result.refresh_token);
           setAccessToken(result.access_token);
         })
