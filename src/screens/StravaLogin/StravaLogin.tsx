@@ -11,8 +11,6 @@ const StravaLogin = () => {
   const navigate = useNavigate();
   const targetScope = ['read', 'activity:read', 'activity:read_all', 'read_all'];
 
-  const [refreshToken, setRefreshToken] = useState<string>('');
-  const [accessToken, setAccessToken] = useState<string>('');
   const [displayScopeError, setDisplayScopeError] = useState(false);
 
   useEffect(() => {
@@ -31,8 +29,10 @@ const StravaLogin = () => {
       )
         .then((res) => res.json())
         .then((result) => {
-          setRefreshToken(result.refresh_token);
-          setAccessToken(result.access_token);
+          sessionStorage.setItem('refreshToken', result.refresh_token);
+          sessionStorage.setItem('accessToken', result.access_token);
+          sessionStorage.setItem('tokenCreationDate', Date().toString());
+          navigate('/');
         })
         .catch((err) => {
           console.error(err);
@@ -41,15 +41,6 @@ const StravaLogin = () => {
       setDisplayScopeError(true);
     }
   }, [query]);
-
-  useEffect(() => {
-    if (refreshToken !== '' && accessToken !== '') {
-      sessionStorage.setItem('refreshToken', refreshToken);
-      sessionStorage.setItem('accessToken', accessToken);
-      sessionStorage.setItem('tokenCreationDate', new Date().toString());
-      navigate('/');
-    }
-  }, [refreshToken, accessToken]);
 
   const checkScope = (scope: string | null) => {
     if (!scope) {

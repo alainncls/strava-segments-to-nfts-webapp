@@ -7,7 +7,7 @@ import React from 'react';
 beforeEach(() => {
   global.fetch = jest.fn(() =>
     Promise.resolve({
-      json: () => Promise.resolve({ refresh_token: 'refresh_token', access_token: 'access_token' }),
+      json: () => Promise.resolve({ refresh_token: 'refreshToken', access_token: 'accessToken' }),
     }),
   ) as jest.Mock;
 });
@@ -35,7 +35,7 @@ test('renders an error if callback has incomplete scope', () => {
   expect(toastElement).toBeInTheDocument();
 });
 
-test('renders no error if callback is complete', () => {
+test('renders no error if callback is complete', async () => {
   render(
     <MemoryRouter
       initialEntries={[
@@ -49,6 +49,11 @@ test('renders no error if callback is complete', () => {
     </MemoryRouter>,
   );
 
+  await new Promise(process.nextTick);
+
   const toastElement = screen.queryAllByText('The scope you authorized is not sufficient for the app to work');
   expect(toastElement).toHaveLength(0);
+
+  expect(window.sessionStorage.getItem('accessToken')).toEqual('accessToken');
+  expect(window.sessionStorage.getItem('refreshToken')).toEqual('refreshToken');
 });
