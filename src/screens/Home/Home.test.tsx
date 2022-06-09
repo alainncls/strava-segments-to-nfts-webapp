@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MemoryRouter } from 'react-router-dom';
 import React from 'react';
@@ -69,10 +69,10 @@ test('renders home component with activities if the access token is found', asyn
   const imageElement = screen.queryAllByAltText('Strava connect button');
   expect(imageElement).toHaveLength(0);
 
-  const activity1Element = await waitFor(() => screen.getByText(activity1.name));
+  const activity1Element = await screen.findByText(activity1.name);
   expect(activity1Element).toBeInTheDocument();
 
-  const activity2Element = await waitFor(() => screen.getByText(activity2.name));
+  const activity2Element = await screen.findByText(activity2.name);
   expect(activity2Element).toBeInTheDocument();
 
   const footerElement = screen.getByRole('contentinfo');
