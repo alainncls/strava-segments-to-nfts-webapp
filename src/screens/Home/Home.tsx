@@ -19,7 +19,7 @@ const Home = () => {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    if (refreshToken && tokenCreationDate && tokenCreationDate.getTime() < new Date().getTime() - 6 * 3600 * 1000) {
+    if (refreshToken && !isTokenValid()) {
       let clientID = process.env.REACT_APP_CLIENT_ID;
       let clientSecret = process.env.REACT_APP_CLIENT_SECRET;
       fetch(
@@ -40,7 +40,7 @@ const Home = () => {
           console.error(err);
         });
     }
-  }, [tokenCreationDate]);
+  }, [refreshToken, tokenCreationDate]);
 
   useEffect(() => {
     const access = sessionStorage.getItem('accessToken');
@@ -61,7 +61,7 @@ const Home = () => {
 
   // use current access token to call all activities
   useEffect(() => {
-    if (accessToken) {
+    if (accessToken && isTokenValid()) {
       fetch(`https://www.strava.com/api/v3/athlete/activities?access_token=${accessToken}`)
         .then((res) => res.json())
         .then((data) => {
@@ -72,10 +72,14 @@ const Home = () => {
     } else {
       setIsLoading(false);
     }
-  }, [accessToken]);
+  }, [accessToken, tokenCreationDate]);
+
+  const isTokenValid = () => {
+    return tokenCreationDate && tokenCreationDate.getTime() > new Date().getTime() - 6 * 3600 * 1000;
+  };
 
   const checkForSegments = (activityId: string) => {
-    if (accessToken) {
+    if (accessToken && isTokenValid()) {
       setIsLoading(true);
       fetch(`${process.env.REACT_APP_SERVER_URL}/activities/${activityId}`, {
         method: 'POST',
@@ -103,16 +107,12 @@ const Home = () => {
     }
   };
 
-  const buildMintNftsBody = () => {
-    const segmentsPictures = checkResults.map((result) => result.picture);
-    const matchingSegmentsIds = checkResults.map((result) => result.segmentId);
-    return { segmentsPictures, matchingSegmentsIds };
-  };
-
   const handleMintNfts = () => {
     if (accessToken && checkResults.length) {
       setIsLoading(true);
-      const body = buildMintNftsBody();
+      const segmentsPictures = checkResults.map((result) => result.picture);
+      const matchingSegmentsIds = checkResults.map((result) => result.segmentId);
+      const body = { segmentsPictures, matchingSegmentsIds };
       const headers: HeadersInit = new Headers();
       headers.set('Content-Type', 'application/json');
       headers.set('x-strava-token', accessToken);
