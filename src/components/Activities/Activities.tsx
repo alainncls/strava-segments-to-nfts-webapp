@@ -11,8 +11,7 @@ const Activities = (props: IProps) => {
   const { activities, checkForSegments } = props;
   return (
     <div className="row">
-      {activities &&
-        activities.length &&
+      {activities?.length &&
         activities.map((activity) => (
           <div className="col-sm-6 mb-3" key={activity.id}>
             <Card>

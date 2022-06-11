@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MemoryRouter } from 'react-router-dom';
 import React from 'react';
@@ -100,4 +100,57 @@ test('renders home component with token refreshing feature', async () => {
 
   expect(window.sessionStorage.getItem('accessToken')).toEqual('newAccessToken');
   expect(window.sessionStorage.getItem('refreshToken')).toEqual('newRefreshToken');
+});
+
+test('renders home component able to find matching segments', async () => {
+  window.sessionStorage.setItem('accessToken', 'accessToken');
+  window.sessionStorage.setItem('refreshToken', 'refreshToken');
+  window.sessionStorage.setItem('tokenCreationDate', Date().toString());
+
+  render(
+    <MemoryRouter initialEntries={[{ pathname: '/' }]}>
+      <Home />
+    </MemoryRouter>,
+  );
+
+  global.fetch = jest.fn(() =>
+    Promise.resolve({
+      json: () => Promise.resolve({ activity: { matchingSegmentsIds: ['12345'], segmentsPictures: ['ipfs://cid'] } }),
+    }),
+  ) as jest.Mock;
+
+  const modalElement = screen.queryByText('Eligible segments');
+  expect(modalElement).not.toBeInTheDocument();
+
+  const activity1Element = await screen.findByText(activity1.name);
+  expect(activity1Element).toBeInTheDocument();
+
+  const buttonElements = screen.queryAllByText('Check for eligible segments');
+  expect(buttonElements).toHaveLength(2);
+
+  fireEvent(
+    buttonElements[0],
+    new MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+    }),
+  );
+
+  const visbleModalElement = await screen.findByText('Eligible segments');
+  expect(visbleModalElement).toBeInTheDocument();
+
+  const buttonElement = await screen.findByText('Mint NFTs');
+  expect(buttonElement).toBeInTheDocument();
+
+  fireEvent(
+    buttonElement,
+    new MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+    }),
+  );
+
+  await waitFor(() => {
+    expect(screen.queryByText('Eligible segments')).not.toBeInTheDocument();
+  });
 });
