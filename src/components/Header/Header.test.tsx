@@ -9,5 +9,5 @@ test('renders header', () => {
   const bannerElement = screen.getByText('Strava Segments to NFTs');
   expect(bannerElement).toBeInTheDocument();
   const linkElements = screen.getAllByRole('link');
-  expect(linkElements).toHaveLength(3);
+  expect(linkElements).toHaveLength(4);
 });

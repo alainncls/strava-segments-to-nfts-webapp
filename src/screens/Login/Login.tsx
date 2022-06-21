@@ -1,13 +1,20 @@
 import React from 'react';
 import './Login.css';
-import { Col, Row } from 'react-bootstrap';
+import { Button, Col, Container, Row } from 'react-bootstrap';
 import landingImage from '../../assets/img/landing.jpg';
 import logoImage from '../../assets/img/logo.png';
+import { useAccount, useConnect, useDisconnect, useEnsName, useNetwork } from 'wagmi';
 
 const Login = () => {
+  const { data: account } = useAccount();
+  const { data: ensName } = useEnsName({ address: account?.address });
+  const { activeConnector, connect, connectors, error, isConnecting, pendingConnector } = useConnect();
+  const { disconnect } = useDisconnect();
+  const { activeChain, chains, isLoading, pendingChainId, switchNetwork } = useNetwork();
+
   return (
     <section className="vh-100">
-      <div className="container-fluid">
+      <Container fluid={true}>
         <Row>
           <Col className="col-sm-6 text-black pt-4">
             <div className="px-5 ms-xl-4">
@@ -17,26 +24,71 @@ const Login = () => {
               </span>
             </div>
 
-            <div className="d-flex align-items-center h-custom-2 px-5 ms-xl-4 mt-5 pt-5 pt-xl-0 mt-xl-n5">
-              <form style={{ width: '23rem' }}>
-                <h3 className="fw-normal mb-3 pb-3" style={{ letterSpacing: '1px' }}>
-                  Connect your wallet
-                </h3>
+            <Container>
+              {account?.address && (
+                <>
+                  <Row>
+                    {ensName ?? account?.address}
+                    {ensName ? ` (${account?.address})` : null}
+                  </Row>
+                  <Row style={{ marginTop: '8px' }}>
+                    Connected to {activeChain?.name ?? activeChain?.id}
+                    {activeChain?.unsupported && ' (unsupported)'}
+                  </Row>
 
-                <div className="pt-1 mb-4">{/* https://wagmi.sh/examples/connect-wallet */}</div>
-              </form>
-            </div>
+                  {switchNetwork && (
+                    <Row style={{ marginTop: '8px' }}>
+                      {chains.map((x) =>
+                        x.id === activeChain?.id ? null : (
+                          <Col key={`${x.id}-col`} className={'col-sm-3'}>
+                            <Button key={x.id} variant={'secondary'} onClick={() => switchNetwork(x.id)}>
+                              {x.name}
+                              {isLoading && x.id === pendingChainId && ' (switching)'}
+                            </Button>
+                          </Col>
+                        ),
+                      )}
+                    </Row>
+                  )}
+                </>
+              )}
+
+              {activeConnector && (
+                <Button onClick={() => disconnect()} style={{ marginTop: '8px' }}>
+                  Disconnect from {activeConnector.name}
+                </Button>
+              )}
+
+              {!account?.address && (
+                <Row className="pt-1 mb-4">
+                  <h3 className="fw-normal mb-3 pb-3" style={{ letterSpacing: '1px' }}>
+                    Connect your wallet
+                  </h3>
+                  {connectors
+                    .filter((x) => x.ready && x.id !== activeConnector?.id)
+                    .map((x) => (
+                      <Col key={`${x.id}-col`} className={'col-sm-3'}>
+                        <Button key={x.id} onClick={() => connect(x)}>
+                          {x.name}
+                          {isConnecting && x.id === pendingConnector?.id && ' (connecting)'}
+                        </Button>
+                      </Col>
+                    ))}
+                </Row>
+              )}
+              {error && <div>{error.message}</div>}
+            </Container>
           </Col>
           <div className="col-sm-6 px-0 d-none d-sm-block">
             <img
               src={landingImage}
-              alt="Login image"
+              alt="Login fullscreen"
               className="w-100 vh-100"
               style={{ objectFit: 'cover', objectPosition: 'left' }}
             />
           </div>
         </Row>
-      </div>
+      </Container>
     </section>
   );
 };
