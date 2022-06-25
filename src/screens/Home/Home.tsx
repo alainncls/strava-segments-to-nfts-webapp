@@ -44,12 +44,12 @@ const Home = () => {
 
   useEffect(() => {
     const access = sessionStorage.getItem('accessToken');
-    if (access) {
+    if (access && access !== 'undefined') {
       setAccessToken(access);
     }
 
     const refresh = sessionStorage.getItem('refreshToken');
-    if (refresh) {
+    if (refresh && refresh !== 'undefined') {
       setRefreshToken(refresh);
     }
 
@@ -62,6 +62,7 @@ const Home = () => {
   // use current access token to call all activities
   useEffect(() => {
     if (accessToken && isTokenValid()) {
+      setIsLoading(true);
       fetch(`https://www.strava.com/api/v3/athlete/activities?access_token=${accessToken}`)
         .then((res) => res.json())
         .then((data) => {
@@ -143,7 +144,8 @@ const Home = () => {
       <Container className="p-3">
         <Header />
         <div className={'mb-5'}>
-          {accessToken ? (
+          {!accessToken && <StravaLoginButton />}
+          {!!(accessToken && activities.length) && (
             <>
               <Activities activities={activities} checkForSegments={checkForSegments} />
               <MatchingSegmentsModal
@@ -153,8 +155,6 @@ const Home = () => {
                 onHide={onModalHide}
               />
             </>
-          ) : (
-            <StravaLoginButton />
           )}
         </div>
         <Footer />
