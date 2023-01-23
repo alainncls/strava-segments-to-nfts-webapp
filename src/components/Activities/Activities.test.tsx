@@ -44,7 +44,7 @@ test('renders activities with ability to check segments', () => {
   render(<Activities activities={activities} checkForSegments={checkForSegments} />);
   const buttonElements = screen.getAllByText('Check for eligible segments');
   expect(buttonElements).toHaveLength(2);
-  
+
   fireEvent(
     buttonElements[0],
     new MouseEvent('click', {

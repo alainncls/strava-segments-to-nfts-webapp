@@ -6,7 +6,6 @@ import Loader from '../../components/Loader/Loader';
 import Header from '../../components/Header/Header';
 import Activities from '../../components/Activities/Activities';
 import MatchingSegmentsModal from '../../components/MatchingSegmentsModal/MatchingSegmentsModal';
-import StravaLoginButton from '../../components/StravaLoginButton/StravaLoginButton';
 import Footer from '../../components/Footer/Footer';
 
 const Home = () => {
@@ -142,9 +141,8 @@ const Home = () => {
     <>
       <Loader loading={isLoading} />
       <Container className="p-3">
-        <Header />
+        <Header isStravaConnected={!!accessToken} />
         <div className={'mb-5'}>
-          {!accessToken && <StravaLoginButton />}
           {!!(accessToken && activities.length) && (
             <>
               <Activities activities={activities} checkForSegments={checkForSegments} />
