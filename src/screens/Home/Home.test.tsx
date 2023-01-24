@@ -5,6 +5,13 @@ import React from 'react';
 import Home from './Home';
 import { IActivity } from '../../types/activity';
 
+jest.mock('connectkit', () => ({
+  ConnectKitButton: () => {
+    const React = require('react');
+    return React.createElement('MockButton');
+  },
+}));
+
 const activity1: IActivity = {
   id: 'ID 1',
   name: 'Activity 1',
